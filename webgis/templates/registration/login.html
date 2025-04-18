@@ -1,0 +1,140 @@
+{% extends 'webgis/base.html' %}
+
+{% block title %}Log In - GeoDjango WebGIS{% endblock %}
+
+{% block additional_styles %}
+.login-container {
+    display: flex;
+    min-height: 100vh;
+}
+.login-sidebar {
+    width: 30%;
+    background-color: #080042;
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.login-sidebar-logo {
+    font-size: 100px;
+    font-weight: bold;
+}
+.login-sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+}
+.login-content {
+    width: 40%;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-form-container {
+    width: 100%;
+    max-width: 400px;
+}
+.login-heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.login-subheading {
+    color: #666;
+    margin-bottom: 30px;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+.btn-primary {
+    width: 100%;
+    background-color: #080042;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+.google-signin {
+    width: 100%;
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+.google-icon {
+    margin-right: 10px;
+}
+.help-text {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+.error-message {
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-sidebar">
+        <div class="login-sidebar-logo">WebGIS.</div>
+        <div class="login-sidebar-footer">
+            <p>WebGIS platform for spatial data visualization.</p>
+        </div>
+    </div>
+    <div class="login-content">
+        <div class="login-form-container">
+            <div class="login-heading">Log In</div>
+            <div class="login-subheading">Welcome back, please log in to continue</div>
+            
+            {% if form.errors %}
+            <div class="error-message">
+                Your username and password didn't match. Please try again.
+            </div>
+            {% endif %}
+            
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="username" class="form-control" placeholder="Email or Username" required autofocus>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Log In</button>
+                
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+            
+            <button class="google-signin">
+                <span class="google-icon">G</span>
+                Sign in with Google
+            </button>
+            
+            <div class="help-text">
+                If you aren't able to login, please contact admin
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

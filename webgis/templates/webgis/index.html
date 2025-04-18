@@ -1,0 +1,220 @@
+{% extends 'webgis/base.html' %}
+
+{% block title %}GeoDjango WebGIS{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+{% endblock %}
+
+{% block additional_styles %}
+#map {
+    width: 100%;
+    height: 500px;
+}
+.form-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+button {
+    background-color: #4338CA;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #3730A3;
+}
+.coordinates-display {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.logo {
+    font-weight: bold;
+    font-size: 24px;
+    color: #4338CA;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+}
+.logout-btn {
+    margin-left: 15px;
+    padding: 6px 12px;
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+}
+.logout-btn:hover {
+    background-color: #e5e5e5;
+}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <div class="logo">WebGIS.</div>
+        <div class="user-info">
+            Welcome, {{ request.user.username }}
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn" style="cursor:pointer;border:1px solid #ddd;background-color:#f5f5f5;padding:6px 12px;border-radius:4px;color:#333;">Logout</button>
+            </form>
+        </div>
+    </div>
+    
+    <h1>GeoDjango WebGIS</h1>
+    
+    <div id="map"></div>
+    
+    <div class="coordinates-display">
+        Current coordinates: <span id="current-coordinates">Click on the map</span>
+    </div>
+    
+    <div class="form-container">
+        <h2>Add a new point</h2>
+        <form id="point-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" name="longitude" step="any" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" name="latitude" step="any" required>
+            </div>
+            <button type="submit">Add Point</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    //Initialize map
+    const map = L.map('map').setView([-6.293629, 106.828995], 10);
+    
+    //Add OpenStreetMap base layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    //GeoJSON points
+    const pointsLayer = L.geoJSON(null, {
+        onEachFeature: function(feature, layer) {
+            if (feature.properties) {
+                layer.bindPopup(
+                    '<h3>' + feature.properties.name + '</h3>' +
+                    '<p>' + (feature.properties.description || 'No description') + '</p>'
+                );
+            }
+        }
+    }).addTo(map);
+    
+    //Load points from API
+    function loadPoints() {
+        fetch('/api/points/')
+            .then(response => response.json())
+            .then(data => {
+                pointsLayer.clearLayers();
+                pointsLayer.addData(data);
+            })
+            .catch(error => console.error('Error loading points:', error));
+    }
+    
+    //Load points on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPoints();
+        
+        //Form submission
+        const form = document.getElementById('point-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                longitude: parseFloat(document.getElementById('longitude').value),
+                latitude: parseFloat(document.getElementById('latitude').value)
+            };
+            
+            //CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            //Submit the point
+            fetch('/api/points/add/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Point added successfully!');
+                    form.reset();
+                    loadPoints();  // Reload points
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding point. See console for details.');
+            });
+        });
+    });
+    
+    //Update coordinates display when clicking on the map
+    map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        
+        document.getElementById('current-coordinates').textContent = `Lat: ${lat}, Lng: ${lng}`;
+        
+        // Update form fields
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+    });
+</script>
+{% endblock %}

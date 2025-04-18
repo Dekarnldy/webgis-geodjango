@@ -1,0 +1,8 @@
+Django>=3.2,<4.0
+GDAL>=3.0.0
+pyproj>=3.0.0
+pysqlite3>=0.4.6
+spatialite>=5.0
+ipython>=7.0.0
+django-debug-toolbar>=3.2.0
+requests>=2.25.0
