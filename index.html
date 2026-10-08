@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGIS</title>
+</head>
+<body>
+<div class="container" id="app" hidden>
+    <div class="header">
+        <div class="logo">WebGIS.</div>
+        <div class="user-info">
+            Welcome, <span id="username"></span>
+            <button type="button" id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <h1>WebGIS</h1>
+
+    <div id="map"></div>
+
+    <div class="coordinates-display">
+        Current coordinates: <span id="current-coordinates">Click on the map</span>
+    </div>
+
+    <div class="form-container">
+        <h2>Add a new point</h2>
+        <form id="point-form">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" maxlength="100" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" name="longitude" step="any" min="-180" max="180" required>
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" name="latitude" step="any" min="-90" max="90" required>
+            </div>
+            <button type="submit">Add Point</button>
+        </form>
+    </div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Old Django URLs
+[[redirects]]
+  from = "/accounts/login/"
+  to = "/login"
+  status = 301
+
+[[redirects]]
+  from = "/stores/map/"
+  to = "/"
+  status = 301
