@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - WebGIS</title>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-sidebar">
+        <div class="login-sidebar-logo">WebGIS.</div>
+        <div class="login-sidebar-footer">
+            <p>WebGIS platform for spatial data visualization.</p>
+        </div>
+    </div>
+    <div class="login-content">
+        <div class="login-form-container">
+            <div id="error" class="error-message" hidden></div>
+            <div id="notice" class="notice-message" hidden></div>
+
+            <section id="login-view">
+                <div class="login-heading">Log In</div>
+                <div class="login-subheading">Welcome back, please log in to continue</div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" placeholder="Email" autocomplete="email" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="Password" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Log In</button>
+                </form>
+
+                <button type="button" id="google-signin" class="google-signin" hidden>
+                    <span class="google-icon">G</span>
+                    Sign in with Google
+                </button>
+
+                <div class="help-text">
+                    <a href="#" id="show-recovery">Forgot your password?</a><br>
+                    If you aren't able to login, please contact admin
+                </div>
+            </section>
+
+            <section id="recovery-view" hidden>
+                <div class="login-heading">Reset password</div>
+                <div class="login-subheading">We'll email you a link to set a new password</div>
+                <form id="recovery-form">
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control" placeholder="Email" autocomplete="email" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Send reset link</button>
+                </form>
+                <div class="help-text"><a href="#" id="back-to-login">Back to log in</a></div>
+            </section>
+
+            <section id="password-view" hidden>
+                <div class="login-heading" id="password-heading">Set your password</div>
+                <div class="login-subheading">Choose a password to finish setting up your account</div>
+                <form id="password-form">
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="New password" autocomplete="new-password" minlength="8" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Save password</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+<script type="module" src="/src/login.ts"></script>
+</body>
+</html>
